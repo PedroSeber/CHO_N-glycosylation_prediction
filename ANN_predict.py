@@ -29,7 +29,7 @@ def predict_Nglyco(location, enzyme_levels):
                     'Asn_745_GnGn': 'tanhshrink', 'Asn_745_GnGnF': 'tanhshrink', 'Asn_745_MGn': 'tanhshrink', 'Asn_745_MGnF': 'tanh',
                     'Fc_DAO_GnGnF': 'relu', 'Fc_EPO_GnGnF': 'relu',
                     'NN_modelNSD_G0F-GnGnF': 'tanhshrink', 'NN_modelNSD_G1F-AGnF': 'tanh', 'NN_modelNSD_G2F-AAF': 'tanh'} 
-    if 'asn' in location:
+    if 'asn' in location or 'fc_' in location:
         X_data = pd.read_csv(join('datasets', 'Training-X.csv'), index_col = 0).values
     else:
         X_data = pd.read_csv(join('datasets', 'NN_modelNSD_training-X.csv'), index_col = 0).values
