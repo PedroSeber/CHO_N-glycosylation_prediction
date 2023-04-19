@@ -1,5 +1,5 @@
 ## Linear and Neural Network Models for Predicting N-glycosylation in Chinese Hamster Ovary Cells Based on B4GALT Levels
-These are the datasets and model files associated with the publication [Linear and Neural Network Models for Predicting N-glycosylation in Chinese Hamster Ovary Cells Based on B4GALT Levels](TODO). This work uses linear models and ANNs to predict the distribution of glycans on potential N-glycosylation sites. The models were trained on data containing normalized CHO cell B4GALT levels.<br>
+These are the datasets and model files associated with the publication [Linear and Neural Network Models for Predicting N-glycosylation in Chinese Hamster Ovary Cells Based on B4GALT Levels](https://doi.org/10.1101/2023.04.13.536762). This work uses linear models and ANNs to predict the distribution of glycans on potential N-glycosylation sites. The models were trained on data containing normalized CHO cell B4GALT levels.<br>
 
 ### Reproducing the models and plots
 Download the [datasets](datasets) folder and run the [SPA\_glycosylation\_model.py](SPA_glycosylation_model.py) file without any flags (`python SPA_glycosylation_model.py`) to recreate the cross-validation results, and run with the `--nested` flag (`python SPA_glycosylation_model.py --nested`) to recreate the nested validation results. To recreate the ANN results, download the [ANN\_train.ipynb](ANN_train.ipynb) file, change the first cell as needed, and run the notebook.<br>
@@ -7,3 +7,5 @@ To recreate the plots, download the [result\_csv\_files](result_csv_files) and [
 
 ### Using the models to predict glycan distributions
 The Conda environment defining the specific packages and version numbers used in this work is available as [ANN\_environment.yaml](ANN_environment.yaml). To use our trained models, run the [ANN\_predict.py](ANN_predict.py) file as `python ANN_predict.py <location> <B4GALT levels>`. For example, `python ANN_predict.py Asn_24 1 1 1 1` to predict the wild-type glycan distribution at Asn 24, or `python ANN_predict.py Asn_83 0.001 0.004 1.03 1.1` to predict the glycan distribution at Asn 83 of a double-knockout mutant.
+
+Alternatively, create an (N+1)x5 .csv with the first column as row names, the first row as column names, and levels of B4GALT1-B4GALT4 in the other columns and run the [ANN\_predict.py](ANN_predict.py) file as `python ANN_predict.py <location> <path/to/file.csv>`. The results will be saved as a new .csv file
