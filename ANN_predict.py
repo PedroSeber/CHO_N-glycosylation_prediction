@@ -1,7 +1,8 @@
-from numpy import maximum as np_maximum
+import numpy as np
 import pandas as pd
 import torch
 from os.path import join as osjoin
+from os.path import exists as osexists
 from collections import OrderedDict
 import warnings
 import pdb
@@ -50,8 +51,6 @@ def predict_Nglyco(location, enzyme_levels):
         X_data = pd.read_csv(osjoin('datasets', 'NN_modelNSD_training-X.csv'), index_col = 0).values
     X_mean = X_data.mean()
     X_std = X_data.std()
-    if len(enzyme_levels) == 1: # User passed multiple experiments as a .csv through the command line, so the inputs are passed as lists
-        enzyme_levels = enzyme_levels[0]
     if isinstance(enzyme_levels, str): # Reading the .csv
         original_path = enzyme_levels # For the failsafe below + convenience when saving the results
         enzyme_levels = pd.read_csv(enzyme_levels, index_col = 0)
@@ -60,7 +59,10 @@ def predict_Nglyco(location, enzyme_levels):
         if enzyme_levels.shape[1] == 3:
             enzyme_levels = pd.read_csv(original_path)
             warnings.warn('Apparently you did not include row headers in your .csv - that is, your .csv is (N+1)x4 instead of (N+1)x5. Assuming all 4 columns are levels of B4GALT')
-    normalized_enzyme = torch.Tensor((enzyme_levels.values - X_mean)/X_std).cuda() # The ANNs were trained on data with mu = 0 and sigma = 1
+        normalized_enzyme = torch.Tensor((enzyme_levels.values - X_mean)/X_std).cuda() # The ANNs were trained on data with mu = 0 and sigma = 1
+    else:
+        enzyme_levels = np.array(enzyme_levels, dtype = float)
+        normalized_enzyme = torch.Tensor((enzyme_levels - X_mean)/X_std).cuda() # The ANNs were trained on data with mu = 0 and sigma = 1
 
     # Formatting of the results
     if location == 'asn_83': # Asn_83 has one glycan with a very long name
@@ -83,15 +85,16 @@ def predict_Nglyco(location, enzyme_levels):
             model.load_state_dict(mydict)
             model.cuda()
             model.eval()
-            pred = np_maximum( model(normalized_enzyme).cpu().detach().squeeze(), 0 ) # Glycan share cannot be < 0
-            if normalized_enzyme.shape[1] > 1:
+            pred = np.maximum( model(normalized_enzyme).cpu().detach().squeeze(), 0 ) # Glycan share cannot be < 0
+            if len(normalized_enzyme.shape) == 2 and normalized_enzyme.shape[1] > 1:
                 temp_pred.append(pred.numpy())
                 temp_glycan_names.append( glycan_name.split('_')[-1] )
             else:
                 print(f'{glycan_name:{spacing}}: {pred:.3f}')
     # Saving the results as a .csv (if enzyme_levels were a .csv)
-    output = pd.DataFrame(temp_pred, index = temp_glycan_names, columns = enzyme_levels.index).T.round(3) # Setting up the DataFrame with the right row/column names + rounding to 3 decimal places
-    output.to_csv(''.join(original_path.split('.')[:-1]) + f'_predictions_{location}.csv')
+    if 'temp_pred' in locals():
+        output = pd.DataFrame(temp_pred, index = temp_glycan_names, columns = enzyme_levels.index).T.round(3) # Setting up the DataFrame with the right row/column names + rounding to 3 decimal places
+        output.to_csv(''.join(original_path.split('.')[:-1]) + f'_predictions_{location}.csv')
 
 class SequenceMLP(torch.nn.Module):
     def __init__(self, layers, activ_fun = 'relu'):
@@ -130,6 +133,9 @@ if __name__ == '__main__':
     parser.add_argument('enzyme_levels', metavar='1 1 1 1', nargs='+', help='The levels of B4GALT1--B4GALT4, normalized to WT levels. If location == NN_modelNSD, the 7 levels of nucleotide sugars, normalized to 0.5')
     args = parser.parse_args()
     location = args.location[0] # [0] to convert from list to string
-    enzyme_levels = args.enzyme_levels
+    if osexists(args.enzyme_levels[0]): # User passed a .csv file
+        enzyme_levels = args.enzyme_levels[0]
+    else:
+        enzyme_levels = args.enzyme_levels
     predict_Nglyco(location, enzyme_levels)
 
