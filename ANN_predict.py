@@ -20,6 +20,7 @@ def predict_Nglyco(location, enzyme_levels):
         If array, the normalized enzyme levels of B4GALT1-B4GALT4.
         If string, the path to a .csv file with (N+1)x5 data representing the levels of B4GALT1-B4GALT4 in N experiments plus a header and a row index
     """
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     location = location.casefold()
     # Attempting to correct the user's input, if needed
     if 'asn' in location and location[3] not in '_0123456789': # User passed something like Asn-24
@@ -59,10 +60,10 @@ def predict_Nglyco(location, enzyme_levels):
         if enzyme_levels.shape[1] == 3:
             enzyme_levels = pd.read_csv(original_path)
             warnings.warn('Apparently you did not include row headers in your .csv - that is, your .csv is (N+1)x4 instead of (N+1)x5. Assuming all 4 columns are levels of B4GALT')
-        normalized_enzyme = torch.Tensor((enzyme_levels.values - X_mean)/X_std).cuda() # The ANNs were trained on data with mu = 0 and sigma = 1
+        normalized_enzyme = torch.Tensor((enzyme_levels.values - X_mean)/X_std).to(device) # The ANNs were trained on data with mu = 0 and sigma = 1
     else:
         enzyme_levels = np.array(enzyme_levels, dtype = float)
-        normalized_enzyme = torch.Tensor((enzyme_levels - X_mean)/X_std).cuda() # The ANNs were trained on data with mu = 0 and sigma = 1
+        normalized_enzyme = torch.Tensor((enzyme_levels - X_mean)/X_std).to(device) # The ANNs were trained on data with mu = 0 and sigma = 1
 
     # Formatting of the results
     if location == 'asn_83': # Asn_83 has one glycan with a very long name
@@ -83,7 +84,7 @@ def predict_Nglyco(location, enzyme_levels):
             # Building the model and making predictions
             model = SequenceMLP(layers, hyperparams)
             model.load_state_dict(mydict)
-            model.cuda()
+            model.to(device)
             model.eval()
             pred = np.maximum( model(normalized_enzyme).cpu().detach().squeeze(), 0 ) # Glycan share cannot be < 0
             if len(normalized_enzyme.shape) == 2 and normalized_enzyme.shape[1] > 1:
