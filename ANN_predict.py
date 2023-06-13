@@ -75,7 +75,7 @@ def predict_Nglyco(location, enzyme_levels):
     # Making predictions
     for glycan_name, hyperparams in hyperparam_dict.items():
         if location in glycan_name.casefold():
-            mydict = torch.load(osjoin('ANN_models', f'ANN_{glycan_name}_dict.pt'))
+            mydict = torch.load(osjoin('ANN_models', f'ANN_{glycan_name}_dict.pt'), map_location = torch.device(device))
             # Getting the size of the model from mydict
             layers = []
             for array_name, array in mydict.items():
