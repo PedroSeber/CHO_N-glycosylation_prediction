@@ -131,7 +131,8 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description = 'Loads a trained ANN model and predicts N-linked glycan distribution based on normalized B4GALT1--B4GALT4 levels.')
     parser.add_argument('location', type = str, nargs = 1, help = 'The N-glycosylation location to be predicted. Must be in {Asn_XX, Asn_XXX, Fc_DAO, Fc_EPO, or NN_modelNSD}.')
-    parser.add_argument('enzyme_levels', metavar='1 1 1 1', nargs='+', help='The levels of B4GALT1--B4GALT4, normalized to WT levels. If location == NN_modelNSD, the 7 levels of nucleotide sugars, normalized to 0.5')
+    parser.add_argument('enzyme_levels', metavar='1 1 1 1', nargs='+', help='The levels of B4GALT1--B4GALT4, normalized to WT levels. If location == NN_modelNSD, the 7 levels of nucleotide sugar donors, normalized to 0.5. ' +
+                        'This can be a .csv file (with a row and column header) to predict multiple conditions at once')
     args = parser.parse_args()
     location = args.location[0] # [0] to convert from list to string
     if osexists(args.enzyme_levels[0]): # User passed a .csv file
