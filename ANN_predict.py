@@ -7,6 +7,19 @@ from collections import OrderedDict
 import warnings
 import pdb
 
+# Outside the function to allow using in other files too
+hyperparam_dict = {
+        'Asn_24_AAF': 'tanhshrink', 'Asn_24_GnGnF': 'relu', 'Asn_24_GnGnGnF': 'tanhshrink', 'Asn_24_GnGnGnGnF': 'tanhshrink', 'Asn_24_MGnF': 'relu', 'Asn_24_NaAAF': 'tanhshrink', 'Asn_24_NaAF': 'selu', 'Asn_24_NaGnF': 'tanhshrink', 'Asn_24_NaGnGnF': 'relu', 'Asn_24_NaGnGnGnF': 'relu', 'Asn_24_NaNaAF': 'tanhshrink', 'Asn_24_NaNaF': 'relu', 'Asn_24_NaNaNaAF': 'tanhshrink', 'Asn_24_NaNaNaF': 'tanhshrink',
+        'Asn_38_AGnGnGnF': 'tanhshrink', 'Asn_38_GnGnF': 'tanh', 'Asn_38_GnGnGnF': 'tanh', 'Asn_38_GnGnGnGnF': 'relu', 'Asn_38_NaAAF': 'relu', 'Asn_38_NaAF': 'tanhshrink', 'Asn_38_NaAGnGnF': 'selu', 'Asn_38_NaGnGnF': 'tanhshrink', 'Asn_38_NaGnGnGnF': 'relu', 'Asn_38_NaNaAAF': 'tanhshrink', 'Asn_38_NaNaAF': 'tanhshrink', 'Asn_38_NaNaGnGnF': 'tanhshrink', 'Asn_38_NaNaNaAF': 'relu', 'Asn_38_NaNaNaF': 'selu', 'Asn_38_NaNaNaGnF': 'tanhshrink', 'Asn_38_NaNaNaNaF': 'relu',
+        'Asn_83_GnGnF': 'tanh', 'Asn_83_GnGnGnF': 'relu', 'Asn_83_GnGnGnGnF': 'relu', 'Asn_83_NaGnGnGnF': 'tanhshrink', 'Asn_83_NaNaAAF': 'tanhshrink', 'Asn_83_NaNaAF': 'tanh', 'Asn_83_NaNaAGnF': 'relu', 'Asn_83_NaNaGnF': 'tanh', 'Asn_83_NaNaNaAF': 'tanhshrink', 'Asn_83_NaNaNaF': 'tanh', 'Asn_83_NaNaNaNaF': 'relu',  'Asn_83_NaNaNaNaF+LacNAc': 'relu',
+        'Asn_110_Man5': 'relu', 'Asn_110_Man6': 'tanhshrink', 'Asn_110_Man7': 'relu',
+        'Asn_168_AGnF': 'tanhshrink', 'Asn_168_GnGnF': 'relu', 'Asn_168_GnGnGnF': 'tanh', 'Asn_168_GnGnGnGnF': 'tanh', 'Asn_168_MGnF': 'tanh', 'Asn_168_NaAAF': 'tanhshrink', 'Asn_168_NaAF': 'relu', 'Asn_168_NaAGnF': 'relu', 'Asn_168_NaGnF': 'tanhshrink', 'Asn_168_NaGnGnF': 'relu', 'Asn_168_NaNaAF': 'selu', 'Asn_168_NaNaF': 'relu', 'Asn_168_NaNaNaAF': 'selu', 'Asn_168_NaNaNaF': 'selu',
+        'Asn_538_AAF': 'tanh', 'Asn_538_AGnF': 'tanh', 'Asn_538_GnGn': 'relu', 'Asn_538_GnGnF': 'relu', 'Asn_538_MGn': 'relu', 'Asn_538_MGnF': 'tanhshrink', 'Asn_538_NaA': 'tanhshrink', 'Asn_538_NaAF': 'relu', 'Asn_538_NaGn': 'relu', 'Asn_538_NaGnF': 'selu', 'Asn_538_NaNa': 'tanhshrink', 'Asn_538_NaNaF': 'selu',
+        'Asn_745_AA': 'tanhshrink', 'Asn_745_AAF': 'tanh', 'Asn_745_AGn': 'tanhshrink', 'Asn_745_AGnF': 'selu', 'Asn_745_GnGn': 'tanhshrink', 'Asn_745_GnGnF': 'tanhshrink', 'Asn_745_MGn': 'tanhshrink', 'Asn_745_MGnF': 'tanh', 'Asn_745_NaA': 'selu', 'Asn_745_NaAF': 'tanh', 'Asn_745_NaGn': 'tanhshrink', 'Asn_745_NaGnF': 'tanhshrink', 'Asn_745_NaNa': 'relu', 'Asn_745_NaNaF': 'relu',
+        'Fc_DAO_AAF': 'tanh', 'Fc_DAO_AGnF': 'relu', 'Fc_DAO_GnGnF': 'relu', 'Fc_DAO_MGnF': 'tanhshrink',
+        'Fc_EPO_AAF': 'tanh', 'Fc_EPO_AGnF': 'tanhshrink', 'Fc_EPO_GnGn': 'tanhshrink', 'Fc_EPO_GnGnF': 'relu', 'Fc_EPO_MGnF': 'relu', 'Fc_EPO_NaAF': 'relu',
+        'NN_modelNSD_G0-GnGn': 'tanh', 'NN_modelNSD_G0F-GnGnF': 'tanhshrink', 'NN_modelNSD_G1F-AGnF': 'tanh', 'NN_modelNSD_G2F-AAF': 'tanh'}
+
 def predict_Nglyco(location, enzyme_levels):
     """
     A function to predict the distribution of N-glycans in CHO cells based on B4GALT1-B4GALT4 levels.
@@ -35,7 +48,7 @@ def predict_Nglyco(location, enzyme_levels):
         location = 'nn_modelnsd'
 
     # Setup
-    hyperparam_dict = {
+    """hyperparam_dict = {
         'Asn_24_AAF': 'tanhshrink', 'Asn_24_GnGnF': 'relu', 'Asn_24_GnGnGnF': 'tanhshrink', 'Asn_24_GnGnGnGnF': 'tanhshrink', 'Asn_24_MGnF': 'relu', 'Asn_24_NaAAF': 'tanhshrink', 'Asn_24_NaAF': 'selu', 'Asn_24_NaGnF': 'tanhshrink', 'Asn_24_NaGnGnF': 'relu', 'Asn_24_NaGnGnGnF': 'relu', 'Asn_24_NaNaAF': 'tanhshrink', 'Asn_24_NaNaF': 'relu', 'Asn_24_NaNaNaAF': 'tanhshrink', 'Asn_24_NaNaNaF': 'tanhshrink',
         'Asn_38_AGnGnGnF': 'tanhshrink', 'Asn_38_GnGnF': 'tanh', 'Asn_38_GnGnGnF': 'tanh', 'Asn_38_GnGnGnGnF': 'relu', 'Asn_38_NaAAF': 'relu', 'Asn_38_NaAF': 'tanhshrink', 'Asn_38_NaAGnGnF': 'selu', 'Asn_38_NaGnGnF': 'tanhshrink', 'Asn_38_NaGnGnGnF': 'relu', 'Asn_38_NaNaAAF': 'tanhshrink', 'Asn_38_NaNaAF': 'tanhshrink', 'Asn_38_NaNaGnGnF': 'tanhshrink', 'Asn_38_NaNaNaAF': 'relu', 'Asn_38_NaNaNaF': 'selu', 'Asn_38_NaNaNaGnF': 'tanhshrink', 'Asn_38_NaNaNaNaF': 'relu',
         'Asn_83_GnGnF': 'tanh', 'Asn_83_GnGnGnF': 'relu', 'Asn_83_GnGnGnGnF': 'relu', 'Asn_83_NaGnGnGnF': 'tanhshrink', 'Asn_83_NaNaAAF': 'tanhshrink', 'Asn_83_NaNaAF': 'tanh', 'Asn_83_NaNaAGnF': 'relu', 'Asn_83_NaNaGnF': 'tanh', 'Asn_83_NaNaNaAF': 'tanhshrink', 'Asn_83_NaNaNaF': 'tanh', 'Asn_83_NaNaNaNaF': 'relu',  'Asn_83_NaNaNaNaF+LacNAc': 'relu',
@@ -45,7 +58,7 @@ def predict_Nglyco(location, enzyme_levels):
         'Asn_745_AA': 'tanhshrink', 'Asn_745_AAF': 'tanh', 'Asn_745_AGn': 'tanhshrink', 'Asn_745_AGnF': 'selu', 'Asn_745_GnGn': 'tanhshrink', 'Asn_745_GnGnF': 'tanhshrink', 'Asn_745_MGn': 'tanhshrink', 'Asn_745_MGnF': 'tanh', 'Asn_745_NaA': 'selu', 'Asn_745_NaAF': 'tanh', 'Asn_745_NaGn': 'tanhshrink', 'Asn_745_NaGnF': 'tanhshrink', 'Asn_745_NaNa': 'relu', 'Asn_745_NaNaF': 'relu',
         'Fc_DAO_AAF': 'tanh', 'Fc_DAO_AGnF': 'relu', 'Fc_DAO_GnGnF': 'relu', 'Fc_DAO_MGnF': 'tanhshrink',
         'Fc_EPO_AAF': 'tanh', 'Fc_EPO_AGnF': 'tanhshrink', 'Fc_EPO_GnGn': 'tanhshrink', 'Fc_EPO_GnGnF': 'relu', 'Fc_EPO_MGnF': 'relu', 'Fc_EPO_NaAF': 'relu',
-        'NN_modelNSD_G0-GnGn': 'tanh', 'NN_modelNSD_G0F-GnGnF': 'tanhshrink', 'NN_modelNSD_G1F-AGnF': 'tanh', 'NN_modelNSD_G2F-AAF': 'tanh'}
+        'NN_modelNSD_G0-GnGn': 'tanh', 'NN_modelNSD_G0F-GnGnF': 'tanhshrink', 'NN_modelNSD_G1F-AGnF': 'tanh', 'NN_modelNSD_G2F-AAF': 'tanh'}"""
     if 'asn' in location or 'fc_' in location:
         X_data = pd.read_csv(osjoin('datasets', 'Training-X.csv'), index_col = 0).values
     else:
