@@ -1,0 +1,8 @@
+# Shap analysis pictures
+Shap*.svg
+
+# Random folders and files
+__pycache__/
+*_results*/
+.ipynb_checkpoints/
+
